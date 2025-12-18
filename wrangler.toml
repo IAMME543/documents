@@ -1,3 +1,0 @@
-name = "my-go-worker"
-main = "worker.wasm"
-compatibility_date = "2025-01-01"
