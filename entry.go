@@ -10,13 +10,10 @@ type Page struct {
 	Body []byte
 }
 
-func (p *Page) save() error {
-	filename := p.Title + ".txt"
-	return os.WriteFile(filename, p.Body, 0600)
-}
+
 
 func loadPage(title string) (*Page, error) {
-	filename := title + ".txt"
+	filename := "public/" + title + ".html"
 	body, err := os.ReadFile(filename)
 	if err != nil {
 		return nil, err
@@ -25,12 +22,17 @@ func loadPage(title string) (*Page, error) {
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
-	title := r.URL.Path[len("/"):]
-    p, _ := loadPage(title)
-    fmt.Fprintf(w, "<h1>%s</h1><div>%s</div>", p.Title, p.Body)
+    p, err := loadPage("index")
+	if err != nil {
+		log.Fatal("Page not found")
+		http.Error(w, "Page not found", http.StatusNotFound)
+		return
+	}
+    fmt.Fprintf(w, "%s", p.Body)
 }
 
 func main() {
 	http.HandleFunc("/", handler)
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Fatal(http.ListenAndServeTLS("0.0.0.0:443", "cert.pem", "key.pem", nil))
+
 }
