@@ -107,6 +107,6 @@ func main() {
 	http.HandleFunc("/api/", apiHandler)
 	http.HandleFunc("/", mainHandler)
 
-	log.Fatal(http.ListenAndServeTLS("0.0.0.0:443", "cert.pem", "key.pem", nil))
+	log.Fatal(http.ListenAndServeTLS("0.0.0.0:443", "/certs/cert.pem", "/certs/key.pem", nil))
 	//log.Fatal((http.ListenAndServe("localhost:8080", nil)))
 }
