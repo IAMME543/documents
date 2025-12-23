@@ -20,7 +20,7 @@ async function savecontent(content) {
 }
 
 function autosave() {
-    let currentText = mainEntry.body;
+    let currentText = mainEntry.value;
     if (currentText != lastSaveContent) {
         savecontent(currentText);
     }
