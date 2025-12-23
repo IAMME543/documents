@@ -8,7 +8,7 @@ async function loadcontent() {
         if (!res.ok) {
             throw new Error("Response failed, status: " + res.status);
         }
-        const result = res.json;
+        const result = await res.json();
         console.log(result);
         mainEntry.value = result;
     }
