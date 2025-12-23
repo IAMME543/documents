@@ -4,7 +4,7 @@ let lastSaveContent = "";
 
 async function loadcontent() {
     try {
-        const res = await fetch("/api/save");
+        const res = await fetch("/api/load");
         if (!res.ok) {
             throw new Error("Response failed, status: " + res.status);
         }
