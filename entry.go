@@ -110,7 +110,7 @@ func main() {
 	http.HandleFunc("/api/", apiHandler)
 	http.HandleFunc("/", mainHandler)
 
-	err := http.ListenAndServeTLS("0.0.0.0:443", "/certs/cert.pem", "/certs/key.pem", nil)
+	err := http.ListenAndServeTLS("0.0.0.0:443", "certs/cert.pem", "certs/key.pem", nil)
 
 	log.Fatalf("ListenAndServeTLS failed: %v", err)
 	//log.Fatal((http.ListenAndServe("localhost:8080", nil)))
