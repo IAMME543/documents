@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"log"
@@ -12,6 +13,9 @@ import (
 type Page struct {
 	Title string
 	Body  []byte
+}
+type SaveRequest struct {
+	content string `json:"content"`
 }
 
 func loadPage(title string) (*Page, error) {
@@ -38,7 +42,13 @@ func saveDocument(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = os.WriteFile("storage/data.txt", body, 0644)
+	var req SaveRequest
+	if err := json.Unmarshal(body, &req); err != nil {
+		http.Error(w, "Invalid JSON", http.StatusBadRequest)
+		return
+	}
+
+	err = os.WriteFile("storage/data.txt", []byte(req.content), 0644)
 	if err != nil {
 		http.Error(w, "Failed to write data to file", http.StatusInternalServerError)
 		return
