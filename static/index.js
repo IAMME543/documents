@@ -3,6 +3,7 @@ mainEntry = document.getElementById("mainEntry");
 let lastSaveContent = "";
 
 async function savecontent(content) {
+    console.log("called save content")
         try {
             await fetch("/api/save", {
                 method: "Post",
@@ -10,6 +11,7 @@ async function savecontent(content) {
                 headers: {"Content-Type": "application/json"}
             });
             lastSaveContent = content;
+            console.log(content)
             console.log("Saved")
         }
         catch (err) {
