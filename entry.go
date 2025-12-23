@@ -15,7 +15,7 @@ type Page struct {
 	Body  []byte
 }
 type SaveRequest struct {
-	content string `json:"content"`
+	Content string `json:"content"`
 }
 
 func loadPage(title string) (*Page, error) {
@@ -47,9 +47,8 @@ func saveDocument(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid JSON", http.StatusBadRequest)
 		return
 	}
-	log.Println(req.content)
 
-	err = os.WriteFile("storage/data.txt", []byte(req.content), 0644)
+	err = os.WriteFile("storage/data.txt", []byte(req.Content), 0644)
 	if err != nil {
 		http.Error(w, "Failed to write data to file", http.StatusInternalServerError)
 		return
