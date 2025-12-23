@@ -79,7 +79,7 @@ func loadDocument(w http.ResponseWriter, r *http.Request) {
 func mainHandler(w http.ResponseWriter, r *http.Request) {
 	p, err := loadPage("index")
 	if err != nil {
-		log.Fatal("Page not found")
+		log.Println("Page not found")
 		http.Error(w, "Page not found", http.StatusNotFound)
 		return
 	}
@@ -101,12 +101,17 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+
+	log.Println("Server Opened on port 443")
+
 	fs := http.FileServer(http.Dir("static"))
 	http.Handle("/static", http.StripPrefix("/static", fs))
 
 	http.HandleFunc("/api/", apiHandler)
 	http.HandleFunc("/", mainHandler)
 
-	log.Fatal(http.ListenAndServeTLS("0.0.0.0:443", "/certs/cert.pem", "/certs/key.pem", nil))
+	err := http.ListenAndServeTLS("0.0.0.0:443", "/certs/cert.pem", "/certs/key.pem", nil)
+
+	log.Fatalf("ListenAndServeTLS failed: %v", err)
 	//log.Fatal((http.ListenAndServe("localhost:8080", nil)))
 }
