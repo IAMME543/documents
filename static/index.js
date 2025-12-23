@@ -8,7 +8,8 @@ async function loadcontent() {
         if (!res.ok) {
             throw new Error("Response failed, status: " + res.status);
         }
-        const result = await res.json;
+        const result = res.json;
+        console.log(result);
         mainEntry.value = result;
     }
     catch (error) {
@@ -37,5 +38,7 @@ function autosave() {
         savecontent(currentText);
     }
 }
+
+loadcontent();
 
 setInterval(autosave, 5000);
