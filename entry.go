@@ -43,7 +43,7 @@ func saveDocument(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var req SaveRequest
-	if err := json.Unmarshal(body, &req.content); err != nil {
+	if err := json.Unmarshal(body, &req); err != nil {
 		http.Error(w, "Invalid JSON", http.StatusBadRequest)
 		return
 	}
