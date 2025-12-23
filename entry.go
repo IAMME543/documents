@@ -47,6 +47,7 @@ func saveDocument(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid JSON", http.StatusBadRequest)
 		return
 	}
+	log.Println(req.content)
 
 	err = os.WriteFile("storage/data.txt", []byte(req.content), 0644)
 	if err != nil {

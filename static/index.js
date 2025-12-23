@@ -24,4 +24,4 @@ function autosave() {
     }
 }
 
-setInterval(autosave(), 5000);
+setInterval(autosave, 5000);
