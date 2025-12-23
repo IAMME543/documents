@@ -2,6 +2,20 @@ mainEntry = document.getElementById("mainEntry");
 
 let lastSaveContent = "";
 
+async function loadcontent() {
+    try {
+        const res = await fetch("/api/save");
+        if (!res.ok) {
+            throw new Error("Response failed, status: " + res.status);
+        }
+        const result = await res.json;
+        mainEntry.value = result;
+    }
+    catch (error) {
+        throw new Error("Error: " + error)
+    }
+}
+
 async function savecontent(content) {
         try {
             await fetch("/api/save", {
