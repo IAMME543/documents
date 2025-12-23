@@ -79,7 +79,7 @@ func loadDocument(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "text/plain")
+	w.Header().Set("Content-Type", "json/application")
 	w.WriteHeader(http.StatusOK)
 
 	_, _ = w.Write(data)

@@ -6,14 +6,14 @@ async function loadcontent() {
     try {
         const res = await fetch("/api/load");
         if (!res.ok) {
-            throw new Error("Response failed, status: " + res.status);
+            console.error("Response failed, status: " + res.status);
         }
         const result = await res.json();
         console.log(result);
         mainEntry.value = result.content;
     }
     catch (error) {
-        throw new Error("Error: " + error)
+        console.error("Error: " + error)
     }
 }
 
