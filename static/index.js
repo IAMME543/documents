@@ -10,7 +10,7 @@ async function loadcontent() {
         }
         const result = await res.json();
         console.log(result);
-        mainEntry.value = result;
+        mainEntry.value = result.content;
     }
     catch (error) {
         throw new Error("Error: " + error)
