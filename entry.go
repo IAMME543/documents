@@ -105,7 +105,7 @@ func main() {
 	log.Println("Server Opened on port 443")
 
 	fs := http.FileServer(http.Dir("static"))
-	http.Handle("/static", http.StripPrefix("/static", fs))
+	http.Handle("/static/", http.StripPrefix("/static/", fs))
 
 	http.HandleFunc("/api/", apiHandler)
 	http.HandleFunc("/", mainHandler)
