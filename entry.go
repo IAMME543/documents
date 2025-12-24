@@ -15,7 +15,12 @@ type Page struct {
 	Body  []byte
 }
 type SaveRequest struct {
+	Title   string `json:"title"`
+	Id      string `json:"id"`
 	Content string `json:"content"`
+}
+type LoadRequest struct {
+	Id string `json:"id"`
 }
 
 func loadPage(title string) (*Page, error) {
@@ -48,7 +53,10 @@ func saveDocument(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = os.WriteFile("storage/data.txt", []byte(req.Content), 0644)
+	filename := fmt.Sprintf("storage/%s.json", req.Id)
+	//in the future when adding authentication we already have it unmarhsaled un req and just
+	// substitute body below for req after we have checked req and a database containing who owns what
+	err = os.WriteFile(filename, body, 0644)
 	if err != nil {
 		http.Error(w, "Failed to write data to file", http.StatusInternalServerError)
 		return
@@ -58,7 +66,28 @@ func saveDocument(w http.ResponseWriter, r *http.Request) {
 }
 
 func loadDocument(w http.ResponseWriter, r *http.Request) {
-	file, err := os.Open("storage/data.txt")
+
+	if r.Method != http.MethodPost {
+		http.Error(w, "Only POST method is allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	body, err := io.ReadAll(r.Body)
+
+	if err != nil {
+		http.Error(w, "Failed to read request body", http.StatusInternalServerError)
+		return
+	}
+
+	var req LoadRequest
+	if err := json.Unmarshal(body, &req); err != nil {
+		http.Error(w, "Invalid JSON", http.StatusBadRequest)
+		return
+	}
+
+	filename := fmt.Sprintf("storage/%s.json", req.Id)
+
+	file, err := os.Open(filename)
 	if err != nil {
 		http.Error(w, "Failed to open file", http.StatusInternalServerError)
 		return
@@ -82,9 +111,7 @@ func loadDocument(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 
-	json.NewEncoder(w).Encode(map[string]string{
-		"content": string(data),
-	})
+	w.Write(data)
 
 }
 
@@ -122,8 +149,8 @@ func main() {
 	http.HandleFunc("/api/", apiHandler)
 	http.HandleFunc("/", mainHandler)
 
-	err := http.ListenAndServeTLS("0.0.0.0:443", "certs/cert.pem", "certs/key.pem", nil)
+	// err := http.ListenAndServeTLS("0.0.0.0:443", "certs/cert.pem", "certs/key.pem", nil)
 
-	log.Fatalf("ListenAndServeTLS failed: %v", err)
-	//log.Fatal((http.ListenAndServe("localhost:8080", nil)))
+	// log.Fatalf("ListenAndServeTLS failed: %v", err)
+	log.Fatal((http.ListenAndServe("localhost:8080", nil)))
 }
