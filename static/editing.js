@@ -4,7 +4,7 @@ titleEntry = document.getElementById("titleEntry");
 let lastSaveContent = "";
 let lastSaveTitle = "";
 
-async function loadcontent(id) {
+async function loadcontent() {
     try {
         const res = await fetch("/api/load", {
                 method: "Post",
@@ -56,7 +56,7 @@ function packagedocumentasjson(content, title) {
 
 
 
-loadcontent(currentDocID);
+loadcontent();
 
 
 

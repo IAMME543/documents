@@ -126,6 +126,8 @@ func listDocument(w http.ResponseWriter, r *http.Request) {
 	err = db.QueryRow(` SELECT json_group_array( json_object('id', id, 'title', title))
 	 AS json_result FROM (SELECT * FROM "index" ORDER BY id);`).Scan(&jsonResult)
 
+	log.Printf(jsonResult)
+
 	w.Header().Set("Content-Type", "applicaiton/json")
 	w.WriteHeader(http.StatusOK)
 
@@ -175,7 +177,7 @@ func addToDB(title string) int64 {
 }
 
 func mainHandler(w http.ResponseWriter, r *http.Request) {
-	p, err := loadPage("home")
+	p, err := loadPage("index")
 	if err != nil {
 		log.Println("Page not found")
 		http.Error(w, "Page not found", http.StatusNotFound)
@@ -212,8 +214,8 @@ func main() {
 	http.HandleFunc("/api/", apiHandler)
 	http.HandleFunc("/", mainHandler)
 
-	// err := http.ListenAndServeTLS("0.0.0.0:443", "certs/cert.pem", "certs/key.pem", nil)
+	err := http.ListenAndServeTLS("0.0.0.0:443", "certs/cert.pem", "certs/key.pem", nil)
 
-	// log.Fatalf("ListenAndServeTLS failed: %v", err)
-	log.Fatal((http.ListenAndServe("localhost:8080", nil)))
+	log.Fatalf("ListenAndServeTLS failed: %v", err)
+	//log.Fatal((http.ListenAndServe("localhost:8080", nil)))
 }
