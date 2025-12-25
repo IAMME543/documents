@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -8,6 +9,8 @@ import (
 	"net/http"
 	"os"
 	"strings"
+
+	_ "modernc.org/sqlite"
 )
 
 type Page struct {
@@ -16,7 +19,6 @@ type Page struct {
 }
 type SaveRequest struct {
 	Title   string `json:"title"`
-	Id      string `json:"id"`
 	Content string `json:"content"`
 }
 type LoadRequest struct {
@@ -52,10 +54,10 @@ func saveDocument(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid JSON", http.StatusBadRequest)
 		return
 	}
+	id := addToDB(req.Title)
 
-	filename := fmt.Sprintf("storage/%s.json", req.Id)
-	//in the future when adding authentication we already have it unmarhsaled un req and just
-	// substitute body below for req after we have checked req and a database containing who owns what
+	filename := fmt.Sprintf("storage/%s.json", id)
+
 	err = os.WriteFile(filename, body, 0644)
 	if err != nil {
 		http.Error(w, "Failed to write data to file", http.StatusInternalServerError)
@@ -114,9 +116,66 @@ func loadDocument(w http.ResponseWriter, r *http.Request) {
 	w.Write(data)
 
 }
+func listDocument(w http.ResponseWriter, r *http.Request) {
+	db, err := sql.Open("sqlite", "/storage/database/index.db")
+	if err != nil {
+		panic(err)
+	}
+	var jsonResult string
+
+	err = db.QueryRow(` SELECT json_group_array( json_object('id', id, 'title', title))
+	 AS json_result FROM (SELECT * FROM "index" ORDER BY id);`).Scan(&jsonResult)
+
+	w.Header().Set("Content-Type", "applicaiton/json")
+	w.WriteHeader(http.StatusOK)
+
+	w.Write([]byte(jsonResult))
+
+}
+
+func initDB() {
+	db, err := sql.Open("sqlite", "storage/database/index.db")
+
+	if err != nil {
+		log.Fatalf("open failed: %#v", err)
+	}
+
+	if err := db.Ping(); err != nil {
+		log.Fatalf("ping failed: %#v", err)
+	}
+
+	_, err = db.Exec(`
+		CREATE TABLE IF NOT EXISTS "index" (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			title TEXT NOT NULL
+		);
+	`)
+	if err != nil {
+		panic(err)
+	}
+	defer db.Close()
+
+}
+func addToDB(title string) int64 {
+	db, err := sql.Open("sqlite", "storage/database/index.db")
+	if err != nil {
+		panic(err)
+	}
+	res, err := db.Exec(
+		`INSERT INTO "index" (title) VALUES (?)`,
+		title)
+
+	if err != nil {
+		panic(err)
+	}
+
+	id, _ := res.LastInsertId()
+	defer db.Close()
+	return id
+}
 
 func mainHandler(w http.ResponseWriter, r *http.Request) {
-	p, err := loadPage("index")
+	p, err := loadPage("home")
 	if err != nil {
 		log.Println("Page not found")
 		http.Error(w, "Page not found", http.StatusNotFound)
@@ -133,6 +192,8 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 		saveDocument(w, r)
 	case "load":
 		loadDocument(w, r)
+	case "list":
+		listDocument(w, r)
 	default:
 		fmt.Fprintf(w, "API call does not exist")
 
@@ -142,6 +203,8 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 func main() {
 
 	log.Println("Server Opened on port 443")
+
+	initDB()
 
 	fs := http.FileServer(http.Dir("static"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))

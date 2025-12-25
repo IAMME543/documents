@@ -3,7 +3,6 @@ titleEntry = document.getElementById("titleEntry");
 
 let lastSaveContent = "";
 let lastSaveTitle = "";
-let currentDocID = "";
 
 async function loadcontent(id) {
     try {
@@ -24,11 +23,11 @@ async function loadcontent(id) {
     }
 }
 
-async function savecontent(content, title, id) {
+async function savecontent(content, title) {
         try {
             await fetch("/api/save", {
                 method: "Post",
-                body: packagedocumentasjson(content, title, id),
+                body: packagedocumentasjson(content, title),
                 headers: {"Content-Type": "application/json"}
             });
             console.log("Saved")
@@ -46,29 +45,19 @@ function autosave() {
     let currentTitle = titleEntry.value;
 
     if (currentText !== lastSaveContent || currentTitle !== lastSaveTitle) {
-        if (currentDocID == "") {
-            currentDocID = generatedocumentid();
-        }
-        savecontent(currentText, currentTitle, currentDocID);
+        savecontent(currentText, currentTitle);
     }
 }
 
-function packagedocumentasjson(content, title, id) {
-    return JSON.stringify({id: id, title: title ,content: content});
+function packagedocumentasjson(content, title) {
+    return JSON.stringify({title: title ,content: content});
 }
 
-function generatedocumentid(length = 8) {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let id = '';
-    for (let i = 0; i < length; i++) {
-        id += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    return id;
-}
 
-if (currentDocID != "") {
-    loadcontent(currentDocID);
-}
+
+
+loadcontent(currentDocID);
+
 
 
 setInterval(autosave, 5000);
