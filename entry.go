@@ -130,16 +130,27 @@ func listDocument(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	var indexlist IndexList
-
-	//I know that * is not meant to be used in prod but i chose to use a database for scaling
-	//purposes, im not going to write out every document and keeping a list of every document
-	//  is a good idea ill do that later
-	err = db.QueryRow(`SELECT * FROM "index"`, 2).Scan(&indexlist.Id, &indexlist.Title)
-
+	rows, err := db.Query(`SELECT id, title FROM "index"`)
 	if err != nil {
 		http.Error(w, "SQL query failed", http.StatusInternalServerError)
-		panic(err)
+		return
+	}
+	defer rows.Close()
+
+	var indexlist []IndexList
+
+	for rows.Next() {
+		var item IndexList
+		if err := rows.Scan(&item.Id, &item.Title); err != nil {
+			http.Error(w, "SQL scan failed", http.StatusInternalServerError)
+			return
+		}
+		indexlist = append(indexlist, item)
+	}
+
+	if err := rows.Err(); err != nil {
+		http.Error(w, "Row iteration failed", http.StatusInternalServerError)
+		return
 	}
 
 	log.Println(indexlist)
@@ -262,9 +273,9 @@ func main() {
 	http.HandleFunc("/", mainHandler)
 	http.HandleFunc("/editing/", editingHandler)
 
-	err := http.ListenAndServeTLS("0.0.0.0:443", "certs/cert.pem", "certs/key.pem", nil)
+	// err := http.ListenAndServeTLS("0.0.0.0:443", "certs/cert.pem", "certs/key.pem", nil)
 
-	log.Fatalf("ListenAndServeTLS failed: %v", err)
+	// log.Fatalf("ListenAndServeTLS failed: %v", err)
 
-	//log.Fatal((http.ListenAndServe("localhost:8080", nil)))
+	log.Fatal((http.ListenAndServe("localhost:8080", nil)))
 }

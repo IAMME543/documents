@@ -22,9 +22,11 @@ function InsertToList(docindex) {
 
     Object.values(docindex).forEach((doc) => {
         let listitem = document.createElement("li")
+        let anchor = document.createElement("a")
 
-        listitem.textContent = "?" + doc
-        
+        anchor.textContent = "https://masondoesthings.com/?" + doc
+
+        listitem.appendChild(anchor)
         documentList.appendChild(listitem)
 
     });
