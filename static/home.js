@@ -20,11 +20,14 @@ async function GetDocumentsIndex() {
 function InsertToList(docindex) {
     console.log(docindex)
 
-    Object.values(docindex).forEach((doc) => {
+    docindex.forEach((doc) => {
         let listitem = document.createElement("li")
         let anchor = document.createElement("a")
 
-        anchor.textContent = "https://masondoesthings.com/?" + doc
+        anchor.target = "_blank";
+        anchor.rel = "noopener noreferrer";
+        anchor.href = "/editing/?id=" + doc.id
+        anchor.textContent = doc.title
 
         listitem.appendChild(anchor)
         documentList.appendChild(listitem)
@@ -40,7 +43,7 @@ async function createDocument() {
         }
         const result = await res.text();
         console.log(result)
-        window.location.replace("/editing?" + result)
+        window.location.replace("/editing?id=" + result)
 
     }
         catch (error) {

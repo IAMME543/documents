@@ -9,19 +9,19 @@ let lastSaveTitle = "";
 
 async function loadcontent() {
     try {
-
+        console.log(id)
         const res = await fetch("/api/load", {
                 method: "Post",
-                body: JSON.stringify({id}),
+                body: JSON.stringify({id: Number(id)}),
                 headers: {"Content-Type": "application/json"}
             });
         if (!res.ok) {
             console.error("Response failed, status: " + res.status);
         }
-        console.log(res)
         const result = await res.json();
         console.log(result);
         mainEntry.value = result.content;
+        titleEntry.value = result.title
     }
     catch (error) {
         console.error("Error: " + error)
@@ -35,6 +35,7 @@ async function savecontent(content, title) {
                 body: packagedocumentasjson(content, title),
                 headers: {"Content-Type": "application/json"}
             });
+            console.log(packagedocumentasjson(content, title))
             console.log("Saved")
         }
         catch (err) {
@@ -55,7 +56,7 @@ function autosave() {
 }
 
 function packagedocumentasjson(content, title) {
-    return JSON.stringify({title: title ,content: content});
+    return JSON.stringify({id:Number(id), title: title ,content: content});
 }
 
 
