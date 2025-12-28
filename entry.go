@@ -262,7 +262,7 @@ func main() {
 	http.HandleFunc("/", mainHandler)
 	http.HandleFunc("/editing/", editingHandler)
 
-	err := http.ListenAndServeTLS("0.0.0.0:443", "certs/cert.pem", "certs/key.pem", nil)
+	err := http.ListenAndServeTLS("0.0.0.0:8443", "certs/cert.pem", "certs/key.pem", nil)
 
 	log.Fatalf("ListenAndServeTLS failed: %v", err)
 
