@@ -20,7 +20,15 @@ input {
 h1 {
     font-size:64px;
 }
+ul {
+  list-style: none;       /* remove bullets */
+  padding: 0;
+  margin: 0;
 
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
 .maincontainer {
     display: flex;
     flex-direction: column;

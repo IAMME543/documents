@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 
 	_ "modernc.org/sqlite"
@@ -18,11 +19,16 @@ type Page struct {
 	Body  []byte
 }
 type SaveRequest struct {
+	Id      int64  `json:"id"`
 	Title   string `json:"title"`
 	Content string `json:"content"`
 }
 type LoadRequest struct {
-	Id string `json:"id"`
+	Id int64 `json:"id"`
+}
+type IndexList struct {
+	Id    string `json:"id"`
+	Title string `json:"title"`
 }
 
 func loadPage(title string) (*Page, error) {
@@ -35,7 +41,15 @@ func loadPage(title string) (*Page, error) {
 
 }
 
-func saveDocument(w http.ResponseWriter, r *http.Request) {
+func createDocument(w http.ResponseWriter, r *http.Request) {
+	id := addToDB("")
+
+	w.Header().Set("Content-Type", "text/plain")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(strconv.FormatInt(id, 10)))
+}
+
+func updateDocument(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method != http.MethodPost {
 		http.Error(w, "Only POST method is allowed", http.StatusMethodNotAllowed)
@@ -54,9 +68,9 @@ func saveDocument(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid JSON", http.StatusBadRequest)
 		return
 	}
-	id := addToDB(req.Title)
+	updateDB(req.Id, req.Title, w)
 
-	filename := fmt.Sprintf("storage/%s.json", id)
+	filename := fmt.Sprintf("storage/%s.json", req.Id)
 
 	err = os.WriteFile(filename, body, 0644)
 	if err != nil {
@@ -64,7 +78,7 @@ func saveDocument(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Fprintf(w, "Wrote to file succsefully")
+	fmt.Fprintf(w, "Updated file succsefully")
 }
 
 func loadDocument(w http.ResponseWriter, r *http.Request) {
@@ -97,16 +111,9 @@ func loadDocument(w http.ResponseWriter, r *http.Request) {
 
 	defer file.Close()
 
-	info, err := file.Stat()
+	data, err := io.ReadAll(file)
 	if err != nil {
-		http.Error(w, "Faled to get file information", http.StatusInternalServerError)
-		return
-	}
-
-	data := make([]byte, info.Size())
-	_, err = file.Read(data)
-	if err != nil {
-		http.Error(w, "Error making file contents", http.StatusInternalServerError)
+		http.Error(w, "Error reading file", http.StatusInternalServerError)
 		return
 	}
 
@@ -117,21 +124,35 @@ func loadDocument(w http.ResponseWriter, r *http.Request) {
 
 }
 func listDocument(w http.ResponseWriter, r *http.Request) {
-	db, err := sql.Open("sqlite", "/storage/database/index.db")
+	db, err := sql.Open("sqlite", "storage/database/index.db")
 	if err != nil {
+		http.Error(w, "SQL open failed", http.StatusInternalServerError)
 		panic(err)
 	}
-	var jsonResult string
 
-	err = db.QueryRow(` SELECT json_group_array( json_object('id', id, 'title', title))
-	 AS json_result FROM (SELECT * FROM "index" ORDER BY id);`).Scan(&jsonResult)
+	var indexlist IndexList
 
-	log.Printf(jsonResult)
+	//I know that * is not meant to be used in prod but i chose to use a database for scaling
+	//purposes, im not going to write out every document and keeping a list of every document
+	//  is a good idea ill do that later
+	err = db.QueryRow(`SELECT * FROM "index"`, 2).Scan(&indexlist.Id, &indexlist.Title)
+
+	if err != nil {
+		http.Error(w, "SQL query failed", http.StatusInternalServerError)
+		panic(err)
+	}
+
+	log.Println(indexlist)
 
 	w.Header().Set("Content-Type", "applicaiton/json")
 	w.WriteHeader(http.StatusOK)
 
-	w.Write([]byte(jsonResult))
+	err = json.NewEncoder(w).Encode(indexlist)
+
+	if err != nil {
+		http.Error(w, "JSON encoder failed", http.StatusInternalServerError)
+		panic(err)
+	}
 
 }
 
@@ -158,6 +179,7 @@ func initDB() {
 	defer db.Close()
 
 }
+
 func addToDB(title string) int64 {
 	db, err := sql.Open("sqlite", "storage/database/index.db")
 	if err != nil {
@@ -175,9 +197,31 @@ func addToDB(title string) int64 {
 	defer db.Close()
 	return id
 }
+func updateDB(id int64, title string, w http.ResponseWriter) {
+	db, err := sql.Open("sqlite", "storage/database/index.db")
+	if err != nil {
+		panic(err)
+	}
+	_, err = db.Exec(`UPDATE "index" SET title = ? WHERE id = ?`, title, id)
+	defer db.Close()
+
+	if err != nil {
+		http.Error(w, "Erorr updating DB", http.StatusInternalServerError)
+	}
+
+}
 
 func mainHandler(w http.ResponseWriter, r *http.Request) {
 	p, err := loadPage("index")
+	if err != nil {
+		log.Println("Page not found")
+		http.Error(w, "Page not found", http.StatusNotFound)
+		return
+	}
+	fmt.Fprintf(w, "%s", p.Body)
+}
+func editingHandler(w http.ResponseWriter, r *http.Request) {
+	p, err := loadPage("editing")
 	if err != nil {
 		log.Println("Page not found")
 		http.Error(w, "Page not found", http.StatusNotFound)
@@ -190,14 +234,17 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 	path := strings.TrimPrefix(r.URL.Path, "/api/")
 
 	switch path {
-	case "save":
-		saveDocument(w, r)
+	case "create":
+		createDocument(w, r)
+	case "update":
+		updateDocument(w, r)
 	case "load":
 		loadDocument(w, r)
 	case "list":
 		listDocument(w, r)
 	default:
-		fmt.Fprintf(w, "API call does not exist")
+		http.Error(w, "API call does not exist", http.StatusMethodNotAllowed)
+		log.Printf("API call not found")
 
 	}
 }
@@ -208,14 +255,16 @@ func main() {
 
 	initDB()
 
-	fs := http.FileServer(http.Dir("static"))
-	http.Handle("/static/", http.StripPrefix("/static/", fs))
+	fsstatic := http.FileServer(http.Dir("static"))
+	http.Handle("/static/", http.StripPrefix("/static/", fsstatic))
 
 	http.HandleFunc("/api/", apiHandler)
 	http.HandleFunc("/", mainHandler)
+	http.HandleFunc("/editing/", editingHandler)
 
-	err := http.ListenAndServeTLS("0.0.0.0:443", "certs/cert.pem", "certs/key.pem", nil)
+	// err := http.ListenAndServeTLS("0.0.0.0:443", "certs/cert.pem", "certs/key.pem", nil)
 
-	log.Fatalf("ListenAndServeTLS failed: %v", err)
-	//log.Fatal((http.ListenAndServe("localhost:8080", nil)))
+	// log.Fatalf("ListenAndServeTLS failed: %v", err)
+
+	log.Fatal((http.ListenAndServe("localhost:8080", nil)))
 }
