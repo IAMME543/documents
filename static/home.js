@@ -27,7 +27,12 @@ function InsertToList(docindex) {
         anchor.target = "_blank";
         anchor.rel = "noopener noreferrer";
         anchor.href = "/editing/?id=" + doc.id
-        anchor.textContent = doc.title
+        if (doc.title != "") {
+            anchor.textContent = doc.title
+        } else {
+            anchor.textContent = "Untitled Document " + doc.id
+        }
+
 
         listitem.appendChild(anchor)
         documentList.appendChild(listitem)

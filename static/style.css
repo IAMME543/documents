@@ -21,13 +21,26 @@ h1 {
     font-size:64px;
 }
 ul {
-  list-style: none;       /* remove bullets */
+  list-style: none; 
   padding: 0;
   margin: 0;
 
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 16px;
+  gap: 10px;
+}
+li {
+    background-color: rgb(238, 238, 238);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+.headercontainer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 20;
 }
 .maincontainer {
     display: flex;

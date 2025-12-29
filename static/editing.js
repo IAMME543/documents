@@ -1,6 +1,9 @@
 mainEntry = document.getElementById("mainEntry");
 titleEntry = document.getElementById("titleEntry");
 
+homebutton = document.getElementById("home")
+
+
 const params = new URLSearchParams(window.location.search);
 const id = params.get("id")
 
@@ -45,6 +48,9 @@ async function savecontent(content, title) {
         lastSaveContent = content;
         lastSaveTitle = title;
 }
+function takeMeHome() {
+    window.location.replace("/")
+}
 
 function autosave() {
     let currentText = mainEntry.value;
@@ -64,6 +70,6 @@ function packagedocumentasjson(content, title) {
 
 loadcontent();
 
-
+homebutton.addEventListener('click', takeMeHome)
 
 setInterval(autosave, 5000);
