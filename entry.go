@@ -296,7 +296,7 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 
 		switch {
 		case path == "":
-			pageName = "index"
+			pageName = "home"
 		case strings.HasPrefix(path, "editing"):
 			pageName = "editing"
 		case strings.HasPrefix(path, "archive"):
@@ -313,31 +313,11 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 	default:
-		var pageName string = "nil"
-		path := strings.Trim(r.URL.Path, "/")
-
-		switch {
-		case path == "":
-			pageName = "index"
-		case strings.HasPrefix(path, "editing"):
-			pageName = "editing"
-		case strings.HasPrefix(path, "archive"):
-			parseArchive(w, r)
-		}
-		if pageName != "nil" {
-			p, err := loadPage(pageName)
-			if err != nil {
-				log.Println("Page not found")
-				http.Error(w, "Page not found", http.StatusNotFound)
-				return
-			}
-			fmt.Fprintf(w, "%s", p.Body)
-			// http.NotFound(w, r)
-			// log.Println("Hostname mismatch")
-			return
-		}
-
+		http.NotFound(w, r)
+		log.Println("Hostname mismatch")
+		return
 	}
+
 }
 
 func apiHandler(w http.ResponseWriter, r *http.Request) {
