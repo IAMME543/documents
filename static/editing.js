@@ -25,6 +25,7 @@ async function loadcontent() {
         console.log(result);
         mainEntry.value = result.content;
         titleEntry.value = result.title
+        document.title = result.title + " | A Typing Site"
     }
     catch (error) {
         console.error("Error: " + error)
@@ -67,7 +68,7 @@ function packagedocumentasjson(content, title) {
 
 
 function autoResize(el) {
-    el.style.height = "auto"
+    el.style.height = "66vh"
     el.style.height = el.scrollHeight + "px"
 }
 

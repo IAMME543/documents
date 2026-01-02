@@ -24,10 +24,12 @@ input {
     border-color: transparent;
     border-width: 0;
     border-bottom-width: 5px;
-    text-align: center;
+    text-align: right;
     background-color: transparent;
     font-family: serif;
     font-weight: bold;
+    margin-right: 16.5vw;
+    flex: 1;
 }
 input:focus {
     outline: none;
@@ -36,7 +38,8 @@ h1 {
     font-family: serif;
     font-size:100px;
     margin: 0%;
-    margin-right: 15vw;
+    margin-right: 16.5vw;
+    text-align: right;
     flex: 1;
 }
 ul {
