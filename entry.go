@@ -177,7 +177,7 @@ func parseArchive(w http.ResponseWriter, r *http.Request) {
 
 	log.Println(id)
 
-	filename := fmt.Sprintf("storage/%d.json", id)
+	filename := fmt.Sprintf("storage/%s.json", id)
 
 	file, err := os.Open(filename)
 	if err != nil {
