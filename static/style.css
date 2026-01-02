@@ -8,9 +8,9 @@ body {
 
 textarea {
     width: 66vw;
-    height: 66vh;
     font-size: 24px;
     resize: none;
+    overflow: hidden;
     border-color: transparent;
     background-color: transparent;
 }
@@ -28,6 +28,9 @@ input {
     background-color: transparent;
     font-family: serif;
     font-weight: bold;
+}
+input:focus {
+    outline: none;
 }
 h1 {
     font-family: serif;

@@ -66,10 +66,18 @@ function packagedocumentasjson(content, title) {
 }
 
 
+function autoResize(el) {
+    el.style.height = "auto"
+    el.style.height = el.scrollHeight + "px"
+}
 
 
 loadcontent();
 
 homebutton.addEventListener('click', takeMeHome)
+mainEntry.addEventListener('input', () => autoResize(mainEntry))
+
+autoResize(mainEntry)
 
 setInterval(autosave, 5000);
+
