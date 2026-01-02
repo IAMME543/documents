@@ -283,7 +283,7 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		fmt.Fprintf(w, "%s", p.Body)
 	case "atypingsite.masondoesthings.com":
-		var pageName = ""
+		var pageName string = "nil"
 		path := strings.Trim(r.URL.Path, "/")
 
 		switch {
@@ -294,14 +294,16 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 		case strings.HasPrefix(path, "archive"):
 			parseArchive(w, r)
 		}
-
-		p, err := loadPage(pageName)
-		if err != nil {
-			log.Println("Page not found")
-			http.Error(w, "Page not found", http.StatusNotFound)
-			return
+		if pageName != "nil" {
+			p, err := loadPage(pageName)
+			if err != nil {
+				log.Println("Page not found")
+				http.Error(w, "Page not found", http.StatusNotFound)
+				return
+			}
+			fmt.Fprintf(w, "%s", p.Body)
 		}
-		fmt.Fprintf(w, "%s", p.Body)
+
 	default:
 		http.NotFound(w, r)
 		return
