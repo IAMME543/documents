@@ -224,22 +224,31 @@ func updateDB(id int64, title string, w http.ResponseWriter) {
 }
 
 func mainHandler(w http.ResponseWriter, r *http.Request) {
-	p, err := loadPage("index")
-	if err != nil {
-		log.Println("Page not found")
-		http.Error(w, "Page not found", http.StatusNotFound)
-		return
+	switch r.Host {
+	case "masondoesthings.com":
+
+	case "https://atypingsite.masondoesthings.com":
+		switch r.URL.Path {
+		case "":
+			p, err := loadPage("index")
+			if err != nil {
+				log.Println("Page not found")
+				http.Error(w, "Page not found", http.StatusNotFound)
+				return
+			}
+			fmt.Fprintf(w, "%s", p.Body)
+		case "/editing":
+			p, err := loadPage("editing")
+			if err != nil {
+				log.Println("Page not found")
+				http.Error(w, "Page not found", http.StatusNotFound)
+				return
+			}
+			fmt.Fprintf(w, "%s", p.Body)
+		}
+
 	}
-	fmt.Fprintf(w, "%s", p.Body)
-}
-func editingHandler(w http.ResponseWriter, r *http.Request) {
-	p, err := loadPage("editing")
-	if err != nil {
-		log.Println("Page not found")
-		http.Error(w, "Page not found", http.StatusNotFound)
-		return
-	}
-	fmt.Fprintf(w, "%s", p.Body)
+
 }
 
 func apiHandler(w http.ResponseWriter, r *http.Request) {
@@ -272,11 +281,10 @@ func main() {
 
 	http.HandleFunc("/api/", apiHandler)
 	http.HandleFunc("/", mainHandler)
-	http.HandleFunc("/editing/", editingHandler)
 
 	err := http.ListenAndServeTLS("0.0.0.0:443", "certs/cert.pem", "certs/key.pem", nil)
 
 	log.Fatalf("ListenAndServeTLS failed: %v", err)
 
-	//log.Fatal((http.ListenAndServe("localhost:8080", nil)))
+	// log.Fatal((http.ListenAndServe("localhost:8080", nil)))
 }
