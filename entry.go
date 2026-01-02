@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"html"
 	"io"
 	"log"
 	"net/http"
@@ -168,6 +169,52 @@ func listDocument(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func parseArchive(w http.ResponseWriter, r *http.Request) {
+
+	path := strings.Trim(r.URL.Path, "/")
+	parts := strings.Split(path, "/")
+	id := parts[1]
+
+	filename := fmt.Sprintf("storage/%d.json", id)
+
+	file, err := os.Open(filename)
+	if err != nil {
+		http.Error(w, "Failed to open file", http.StatusInternalServerError)
+		return
+	}
+
+	defer file.Close()
+
+	data, err := io.ReadAll(file)
+	if err != nil {
+		http.Error(w, "Error reading file", http.StatusInternalServerError)
+		return
+	}
+
+	var req SaveRequest
+	if err := json.Unmarshal(data, &req); err != nil {
+		http.Error(w, "Invalid JSON", http.StatusBadRequest)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+
+	fmt.Fprintln(w, "<!doctype html>")
+	fmt.Fprintln(w, "<html><head>")
+	fmt.Fprintf(w, "<title>%s</title>\n", html.EscapeString(req.Title))
+	fmt.Fprintln(w, "</head><body>")
+
+	fmt.Fprintf(w, "<h1>%s</h1>\n", html.EscapeString(req.Title))
+	fmt.Fprintf(w, "<p>This is a read only archive version of this document<p> <hr>")
+	// Very simple paragraph splitting
+	for _, para := range strings.Split(req.Content, "\n\n") {
+		fmt.Fprintf(w, "<p>%s</p>\n", html.EscapeString(para))
+	}
+
+	fmt.Fprintln(w, "</body></html>")
+
+}
+
 func initDB() {
 	db, err := sql.Open("sqlite", "storage/database/index.db")
 
@@ -244,6 +291,8 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 			pageName = "index"
 		case strings.HasPrefix(path, "editing"):
 			pageName = "editing"
+		case strings.HasPrefix(path, "archive"):
+			parseArchive(w, r)
 		}
 
 		p, err := loadPage(pageName)
