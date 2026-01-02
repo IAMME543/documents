@@ -175,6 +175,8 @@ func parseArchive(w http.ResponseWriter, r *http.Request) {
 	parts := strings.Split(path, "/")
 	id := parts[1]
 
+	log.Println(id)
+
 	filename := fmt.Sprintf("storage/%d.json", id)
 
 	file, err := os.Open(filename)
