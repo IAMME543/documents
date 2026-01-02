@@ -224,12 +224,14 @@ func updateDB(id int64, title string, w http.ResponseWriter) {
 }
 
 func mainHandler(w http.ResponseWriter, r *http.Request) {
-	switch r.Host {
+	host := strings.Split(r.Host, ":")[0]
+
+	switch host {
 	case "masondoesthings.com":
 
 	case "atypingsite.masondoesthings.com":
 		switch r.URL.Path {
-		case "":
+		case "/":
 			p, err := loadPage("index")
 			if err != nil {
 				log.Println("Page not found")
