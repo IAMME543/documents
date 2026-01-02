@@ -206,8 +206,13 @@ func parseArchive(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "<title>%s</title>\n", html.EscapeString(req.Title))
 	fmt.Fprintf(w, `<link rel="stylesheet" href="/static/style.css" />`)
 	fmt.Fprintln(w, "</head><body>")
-	fmt.Fprintf(w, "<p>This is a read only archive version of this document<p> <hr>")
-	fmt.Fprintf(w, "<h1>%s</h1>\n", html.EscapeString(req.Title))
+	fmt.Fprintf(w, `<p>This is a read only archive version of this document<p>\n 
+	<hr>\n
+	<div class="headercontainer">\n
+		<button id="create">+</button>\n
+		<div class="spacer"></div>\n
+		<h1>%s</h1>\n
+	</div>`, html.EscapeString(req.Title))
 
 	// Very simple paragraph splitting
 	for _, para := range strings.Split(req.Content, "\n\n") {
