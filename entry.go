@@ -228,27 +228,34 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 
 	switch host {
 	case "masondoesthings.com":
-
+		p, err := loadPage("home")
+		if err != nil {
+			log.Println("Page not found")
+			http.Error(w, "Page not found", http.StatusNotFound)
+			return
+		}
+		fmt.Fprintf(w, "%s", p.Body)
 	case "atypingsite.masondoesthings.com":
-		switch r.URL.Path {
-		case "/":
-			p, err := loadPage("index")
-			if err != nil {
-				log.Println("Page not found")
-				http.Error(w, "Page not found", http.StatusNotFound)
-				return
-			}
-			fmt.Fprintf(w, "%s", p.Body)
-		case "/editing":
-			p, err := loadPage("editing")
-			if err != nil {
-				log.Println("Page not found")
-				http.Error(w, "Page not found", http.StatusNotFound)
-				return
-			}
-			fmt.Fprintf(w, "%s", p.Body)
+		var pageName = ""
+		path := strings.Trim(r.URL.Path, "/")
+
+		switch {
+		case path == "":
+			pageName = "index"
+		case strings.HasPrefix(path, "editing"):
+			pageName = "editing"
 		}
 
+		p, err := loadPage(pageName)
+		if err != nil {
+			log.Println("Page not found")
+			http.Error(w, "Page not found", http.StatusNotFound)
+			return
+		}
+		fmt.Fprintf(w, "%s", p.Body)
+	default:
+		http.NotFound(w, r)
+		return
 	}
 
 }
