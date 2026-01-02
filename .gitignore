@@ -1,2 +1,3 @@
 certs/
-storage/
+storage/*
+bin/debug

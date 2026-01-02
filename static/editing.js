@@ -1,7 +1,9 @@
 mainEntry = document.getElementById("mainEntry");
 titleEntry = document.getElementById("titleEntry");
 
-homebutton = document.getElementById("home")
+savedState = document.getElementById("saveState");
+
+homebutton = document.getElementById("home");
 
 
 const params = new URLSearchParams(window.location.search);
@@ -35,6 +37,7 @@ async function loadcontent() {
 
 async function savecontent(content, title) {
         try {
+            savedState.textContent = "Saving..."
             await fetch("/api/update", {
                 method: "Post",
                 body: packagedocumentasjson(content, title),
@@ -42,9 +45,11 @@ async function savecontent(content, title) {
             });
             console.log(packagedocumentasjson(content, title))
             console.log("Saved")
+            savedState.textContent = "Saved ✓"
         }
         catch (err) {
             console.log("Failed to save: " + err);
+            savedState.textContent = "Last Save Failed X" 
         }
 
         lastSaveContent = content;

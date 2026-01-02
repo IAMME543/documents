@@ -28,8 +28,6 @@ input {
     background-color: transparent;
     font-family: serif;
     font-weight: bold;
-    margin-right: 16.5vw;
-    flex: 1;
 }
 input:focus {
     outline: none;
@@ -98,4 +96,15 @@ hr {
 }
 .spacer {
     flex: 1;
+}
+.subheader {
+    display: flex;
+    flex-direction: column;
+    align-items: right;
+    margin-right: 16.5vw;
+    flex: 1;
+}
+#saveState {
+    text-align: right;
+    margin: 0;
 }
