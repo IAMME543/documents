@@ -227,7 +227,7 @@ func mainHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Host {
 	case "masondoesthings.com":
 
-	case "https://atypingsite.masondoesthings.com":
+	case "atypingsite.masondoesthings.com":
 		switch r.URL.Path {
 		case "":
 			p, err := loadPage("index")
