@@ -76,6 +76,10 @@ a:hover, button:hover {
 hr {
     width:66%;
 }
+p {
+    text-align: right;
+    margin: 0;
+}
 
 .headercontainer {
     display: flex;
@@ -101,8 +105,4 @@ hr {
     align-items: right;
     margin-right: 16.5vw;
     flex: 1;
-}
-#saveState {
-    text-align: right;
-    margin: 0;
 }
