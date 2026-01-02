@@ -26,6 +26,7 @@ async function loadcontent() {
         mainEntry.value = result.content;
         titleEntry.value = result.title
         document.title = result.title + " | A Typing Site"
+        autoResize(mainEntry)
     }
     catch (error) {
         console.error("Error: " + error)
@@ -68,7 +69,7 @@ function packagedocumentasjson(content, title) {
 
 
 function autoResize(el) {
-    el.style.height = "66vh"
+    el.style.height = "auto"
     el.style.height = el.scrollHeight + "px"
 }
 
@@ -78,7 +79,7 @@ loadcontent();
 homebutton.addEventListener('click', takeMeHome)
 mainEntry.addEventListener('input', () => autoResize(mainEntry))
 
-autoResize(mainEntry)
+
 
 setInterval(autosave, 5000);
 
