@@ -24,7 +24,7 @@ function InsertToList(docindex) {
         let listitem = document.createElement("li")
         let anchor = document.createElement("a")
 
-        anchor.target = "_blank";
+        anchor.target = "_self";
         anchor.rel = "noopener noreferrer";
         anchor.href = "/editing/?id=" + doc.id
         if (doc.title != "") {
