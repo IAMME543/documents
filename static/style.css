@@ -80,6 +80,14 @@ p {
     text-align: right;
     margin: 0;
 }
+pre {
+  width: 100%;        
+  white-space: pre-wrap;
+  word-wrap: break-word; 
+  box-sizing: border-box;   
+  font-family: inherit;
+  font-size: 24px;
+}
 
 .headercontainer {
     display: flex;
