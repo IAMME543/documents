@@ -215,7 +215,7 @@ func parseArchive(w http.ResponseWriter, r *http.Request) {
           <p>This is a read only archive version of this document</p>
         </div>
 	</div>`, html.EscapeString(req.Title))
-	fmt.Fprintln(w, "<pre>%s<pre>", html.EscapeString(req.Content))
+	fmt.Fprintln(w, `<div class="maincontainer"><pre>%s<pre></div>`, html.EscapeString(req.Content))
 
 	fmt.Fprintln(w, "</body></html>")
 
