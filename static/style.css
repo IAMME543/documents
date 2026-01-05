@@ -58,13 +58,12 @@ li {
 }
 a {
     color: black;
-
-        transition: scale .2s;
+    transition: scale .2s;
 }
 button {
     background-color: transparent;
     border-width: 0;
-    margin-left: 5vw;
+    margin: 0;
     text-decoration: underline;
     font-size: 64px;
 
@@ -89,7 +88,12 @@ pre {
   font-family: inherit;
   font-size: 24px;
 }
-
+.leftbuttons {
+    gap: 20;
+    margin-left: 5vw;
+    display: flex;
+    flex-direction: row;
+}
 .headercontainer {
     display: flex;
     flex-direction: row;

@@ -3,8 +3,10 @@ titleEntry = document.getElementById("titleEntry");
 
 savedState = document.getElementById("saveState");
 
-homebutton = document.getElementById("home");
 
+homebutton = document.getElementById("home");
+sharebutton = document.getElementById("share");
+archivebutton = document.getElementById("archive");
 
 const params = new URLSearchParams(window.location.search);
 const id = params.get("id")
