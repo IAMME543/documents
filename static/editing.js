@@ -80,11 +80,33 @@ function autoResize(el) {
     el.style.height = el.scrollHeight + "px"
 }
 
+async function copyToClipboard(text, type) {
+    try {
+        await navigator.clipboard.writeText(text)
+        alert(type + " URL Copied To Clipboard")
+    }
+catch {
+    alert("Failed To Copy URL")
+}
+}
+function share() {
+    url = document.URL
+    copyToClipboard(url, "Share")
+}
+function archive() {
+    url = "https://atypingsite.masondoesthings.com/archive/" + id
+    copyToClipboard(url, "Archive")
+    
+}
+
 
 loadcontent();
 
 homebutton.addEventListener('click', takeMeHome)
 mainEntry.addEventListener('input', () => autoResize(mainEntry))
+
+sharebutton.addEventListener('click', share)
+archivebutton.addEventListener('click', archive)
 
 
 
