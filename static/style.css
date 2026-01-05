@@ -40,14 +40,7 @@ h1 {
     white-space: nowrap;
 }
 ul {
-  list-style: none; 
-  padding: 0;
-  margin: 0;
-  width: 66vw;
 
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 10px;
 }
 li {
     background-color: transparent;
@@ -119,4 +112,14 @@ pre {
     align-items: right;
     margin-right: 16.5vw;
     flex: 1;
+}
+.gridul {
+      list-style: none; 
+  padding: 0;
+  margin: 0;
+  width: 66vw;
+
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
 }
