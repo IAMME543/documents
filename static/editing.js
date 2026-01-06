@@ -18,10 +18,10 @@ async function loadcontent() {
     try {
         console.log(id)
         const res = await fetch("/api/load", {
-                method: "Post",
-                body: JSON.stringify({id: Number(id)}),
-                headers: {"Content-Type": "application/json"}
-            });
+            method: "Post",
+            body: JSON.stringify({ id: Number(id) }),
+            headers: { "Content-Type": "application/json" }
+        });
         if (!res.ok) {
             console.error("Response failed, status: " + res.status);
         }
@@ -38,24 +38,24 @@ async function loadcontent() {
 }
 
 async function savecontent(content, title) {
-        try {
-            savedState.textContent = "Saving..."
-            await fetch("/api/update", {
-                method: "Post",
-                body: packagedocumentasjson(content, title),
-                headers: {"Content-Type": "application/json"}
-            });
-            console.log(packagedocumentasjson(content, title))
-            console.log("Saved")
-            savedState.textContent = "Saved ✓"
-        }
-        catch (err) {
-            console.log("Failed to save: " + err);
-            savedState.textContent = "Last Save Failed X" 
-        }
+    try {
+        savedState.textContent = "Saving..."
+        await fetch("/api/update", {
+            method: "Post",
+            body: packagedocumentasjson(content, title),
+            headers: { "Content-Type": "application/json" }
+        });
+        console.log(packagedocumentasjson(content, title))
+        console.log("Saved")
+        savedState.textContent = "Saved ✓"
+    }
+    catch (err) {
+        console.log("Failed to save: " + err);
+        savedState.textContent = "Last Save Failed X"
+    }
 
-        lastSaveContent = content;
-        lastSaveTitle = title;
+    lastSaveContent = content;
+    lastSaveTitle = title;
 }
 function takeMeHome() {
     window.location.replace("/")
@@ -71,7 +71,7 @@ function autosave() {
 }
 
 function packagedocumentasjson(content, title) {
-    return JSON.stringify({id:Number(id), title: title ,content: content});
+    return JSON.stringify({ id: Number(id), title: title, content: content });
 }
 
 
@@ -80,23 +80,39 @@ function autoResize(el) {
     el.style.height = el.scrollHeight + "px"
 }
 
-async function copyToClipboard(text, type) {
+async function copyToClipboard(text, button) {
     try {
+        if (button.dataset.busy === "1") return
+
         await navigator.clipboard.writeText(text)
-        alert(type + " URL Copied To Clipboard")
+
+        button.dataset.busy = "1"
+
+        origionaltext = button.textContent
+        button.textContent = origionaltext + "\n Copied To Clipboard"
+
+        setTimeout(() => {
+            button.textContent = origionaltext
+            delete button.dataset.busy
+        }, 1000);
     }
-catch {
-    alert("Failed To Copy URL")
+    catch {
+        origionaltext = button.textContent
+        button.textContent = origionaltext + "\n Copied To Clipboard"
+
+        setTimeout(() => {
+            button.textContent = origionaltext
+        }, 1000);
+    }
 }
-}
-function share() {
+function share(button) {
     url = document.URL
-    copyToClipboard(url, "Share")
+    copyToClipboard(url, button)
 }
-function archive() {
+function archive(button) {
     url = "https://atypingsite.masondoesthings.com/archive/" + id
-    copyToClipboard(url, "Archive")
-    
+    copyToClipboard(url, button)
+
 }
 
 
@@ -105,8 +121,8 @@ loadcontent();
 homebutton.addEventListener('click', takeMeHome)
 mainEntry.addEventListener('input', () => autoResize(mainEntry))
 
-sharebutton.addEventListener('click', share)
-archivebutton.addEventListener('click', archive)
+sharebutton.addEventListener('click', () => share(sharebutton))
+archivebutton.addEventListener('click', () => archive(archivebutton))
 
 
 
