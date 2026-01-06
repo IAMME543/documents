@@ -88,20 +88,31 @@ async function copyToClipboard(text, button) {
 
         button.dataset.busy = "1"
 
-        origionaltext = button.textContent
-        button.textContent = origionaltext + "\n Copied To Clipboard"
+        p = document.createElement('p') 
+        p.textContent = "Copied To Clipboard"
+        p.classList.add('centeredtext')
+        button.appendChild(p)
 
         setTimeout(() => {
-            button.textContent = origionaltext
+            p.remove()
             delete button.dataset.busy
         }, 1000);
     }
     catch {
-        origionaltext = button.textContent
-        button.textContent = origionaltext + "\n Copied To Clipboard"
+        if (button.dataset.busy === "1") return
+
+        await navigator.clipboard.writeText(text)
+
+        button.dataset.busy = "1"
+
+        p = document.createElement('p') 
+        p.textContent = "Copied To Clipboard"
+        p.classList.add('centeredtext')
+        button.appendChild(p)
 
         setTimeout(() => {
-            button.textContent = origionaltext
+            p.remove()
+            delete button.dataset.busy
         }, 1000);
     }
 }
