@@ -83,10 +83,9 @@ function autoResize(el) {
 async function copyToClipboard(text, button) {
     try {
         if (button.dataset.busy === "1") return
+        button.dataset.busy = "1"
 
         await navigator.clipboard.writeText(text)
-
-        button.dataset.busy = "1"
 
         p = document.createElement('p') 
         p.textContent = "Copied To Clipboard"

@@ -125,4 +125,7 @@ pre {
 }
 .centeredtext {
     text-align: center;
+    text-decoration: none;
+    font-size: .8rem;
+    position: absolute;
 }
