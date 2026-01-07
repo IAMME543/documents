@@ -31,7 +31,6 @@ type IndexList struct {
 	Id    string `json:"id"`
 	Title string `json:"title"`
 }
-
 func loadPage(title string) (*Page, error) {
 	filename := "templates/" + title + ".html"
 	body, err := os.ReadFile(filename)
@@ -374,5 +373,5 @@ func main() {
 
 	log.Fatalf("ListenAndServeTLS failed: %v", err)
 
-	// log.Fatal((http.ListenAndServe("localhost:8080", nil)))
+	 // log.Fatal((http.ListenAndServe("localhost:8080", nil)))
 }
